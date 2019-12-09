@@ -8,6 +8,14 @@ const guestSchema = mongoose.Schema({
   address: {
     type: String,
     required: true
+  },
+  contact: {
+    type: Number,
+    required: true
+  },
+  image: {
+    type: String,
+    required: true
   }
 });
 

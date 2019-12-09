@@ -1,6 +1,33 @@
 const express = require("express");
 const router = express.Router();
+const multer = require("multer");
 const guests = require("../models/guests");
+
+var storage = multer.diskStorage({
+  destination: function(req, file, cb) {
+    cb(null, "./uploads");
+  },
+  filename: function(req, file, cb) {
+    cb(null, file.originalname);
+  }
+});
+
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === "image/jpeg" ||
+    file.mimetype === "image/png" ||
+    file.mimetype === "image/jpg"
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 1024 * 1024 * 15 },
+  fileFilter: fileFilter
+});
 
 router.get("/", (req, res, next) => {
   guests
@@ -43,9 +70,12 @@ router.get("/:gid", (req, res, next) => {
     });
 });
 
-router.post("/", (req, res, next) => {
+router.post("/", upload.single("image"), (req, res, next) => {
   const guest = new guests({
-    name: req.body.name
+    name: req.body.name,
+    address: req.body.address,
+    contact: req.body.contact,
+    image: req.file.path
   });
   guest
     .save()
