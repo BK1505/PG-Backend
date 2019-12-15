@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 const guests = require("../models/guests");
+const checkAuth = require("../middleware/check-auth");
 
 var storage = multer.diskStorage({
   destination: function(req, file, cb) {
@@ -29,7 +30,7 @@ const upload = multer({
   fileFilter: fileFilter
 });
 
-router.get("/", (req, res, next) => {
+router.get("/", checkAuth, (req, res, next) => {
   guests
     .find()
     .exec()
@@ -46,7 +47,7 @@ router.get("/", (req, res, next) => {
     });
 });
 
-router.get("/:gid", (req, res, next) => {
+router.get("/:gid", checkAuth, (req, res, next) => {
   const id = req.params.gid;
   guests
     .findById(id)
@@ -70,7 +71,7 @@ router.get("/:gid", (req, res, next) => {
     });
 });
 
-router.post("/", upload.single("image"), (req, res, next) => {
+router.post("/", checkAuth, upload.single("image"), (req, res, next) => {
   const guest = new guests({
     name: req.body.name,
     address: req.body.address,
@@ -92,7 +93,7 @@ router.post("/", upload.single("image"), (req, res, next) => {
     });
 });
 
-router.patch("/:gid", (req, res) => {
+router.patch("/:gid", checkAuth, (req, res) => {
   guests
     .update({ _id: req.params.gid }, req.body, (err, guest) => {
       if (err) {
@@ -113,7 +114,7 @@ router.patch("/:gid", (req, res) => {
     });
 });
 
-router.delete("/:gid", (req, res, next) => {
+router.delete("/:gid", checkAuth, (req, res, next) => {
   guests
     .remove({ _id: req.params.gid })
     .exec()
