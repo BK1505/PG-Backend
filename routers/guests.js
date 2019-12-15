@@ -92,10 +92,25 @@ router.post("/", upload.single("image"), (req, res, next) => {
     });
 });
 
-router.patch("/", (req, res, next) => {
-  res.status(200).json({
-    message: "guest update"
-  });
+router.patch("/:gid", (req, res) => {
+  guests
+    .update({ _id: req.params.gid }, req.body, (err, guest) => {
+      if (err) {
+        console.log("The error is ", err);
+      }
+    })
+    .exec()
+    .then(result => {
+      res.status(200).json({
+        message: "Guest details updated"
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({
+        error: err
+      });
+    });
 });
 
 router.delete("/:gid", (req, res, next) => {
